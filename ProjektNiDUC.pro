@@ -24,15 +24,29 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        vpsserwer.cpp
+        vpsserwer.cpp \
+    parallelsystem.cpp \
+    item.cpp \
+    parameterschooser.cpp \
+    itemsgroup.cpp \
+    serialsystem.cpp
 
 HEADERS += \
-        vpsserwer.h
+        vpsserwer.h \
+    parallelsystem.h \
+    item.h \
+    parameterschooser.h \
+    itemsgroup.h \
+    serialsystem.h
 
 FORMS += \
-        vpsserwer.ui
+        vpsserwer.ui \
+    parameterschooser.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    icons.qrc

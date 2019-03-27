@@ -1,2 +1,6 @@
-<!DOCTYPE RCC>
-<RCC version="1.0"/>
+<RCC>
+    <qresource prefix="/menuItems">
+        <file>search.png</file>
+        <file>sketch.png</file>
+    </qresource>
+</RCC>
