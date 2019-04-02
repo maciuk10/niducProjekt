@@ -21,7 +21,6 @@ void ParametersChooser::addItemsGroup(ItemsGroup *items) {
     }
     ui->distributionType->addItem("Rozkład Wykładniczy");
     ui->distributionType->addItem("Rozkład Weibulla");
-    ui->distributionType->addItem("Rozkład Normalny");
 }
 
 ItemsGroup *ParametersChooser::getItemsChoosen() {
@@ -29,21 +28,16 @@ ItemsGroup *ParametersChooser::getItemsChoosen() {
     QString itemName = ui->deviceName->currentText();
     int itemCount = ui->itemsCount->text().toInt();
     double mtbf, mttr, mttf;
-    if(ui->constAvailability->isChecked()){
-        mtbf = ui->mtbf->text().toDouble();
-        mttr = ui->mttr->text().toDouble();
-        mttf = ui->mttf->text().toDouble();
-    }else {
-        mtbf = 0.0;
-        mttf = 0.0;
-        mttr = 0.0;
-    }
+    mtbf = ui->mtbf->text().toDouble();
+    mttr = ui->mttr->text().toDouble();
+    mttf = ui->mttf->text().toDouble();
     group = new ItemsGroup();
     for(int i = 0; i < itemCount; i++){
-        Item *item = new Item(itemName, "", mtbf, mttr);
-        if(mtbf == 0.0 && mttr == 0.0){
+        Item *item = new Item(itemName, this->itemsType, mtbf, mttr);
+        if(ui->mtbf->isEnabled() == false){
             item->setDistribution(ui->distributionType->currentText());
         }
+        item->setAvailability(0);
         group->addItem(item);
     }
     return group;
@@ -85,4 +79,8 @@ void ParametersChooser::on_constAvailability_clicked() {
 
 void ParametersChooser::on_buttonBox_accepted() {
     getItemsChoosen();
+}
+
+void ParametersChooser::setItemsType(QString itemsType) {
+    this->itemsType = itemsType;
 }

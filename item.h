@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <QString>
+#include <cmath>
 
 class Item {
 private:
@@ -13,6 +14,8 @@ private:
     double mttf;
     double availability;
     QString distribution;
+    int year;
+    bool switched;
 public:
     Item(QString name, QString type, double mtbf, double mttr);
     QString getName() const;
@@ -27,8 +30,14 @@ public:
     void setMttf(double value);
     double getAvailability() const;
     void setAvailability(int time);
+    double calcMttf();
+    double floatRound(double floatMin, double floatMax);
     QString getDistribution() const;
     void setDistribution(const QString &value);
+    int getYear() const;
+    void setYear(int value);
+    bool getSwitched() const;
+    void setSwitched(bool value);
 };
 
 #endif // ITEM_H

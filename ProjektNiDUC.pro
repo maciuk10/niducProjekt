@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets
+QT       += core gui widgets printsupport
 
 TARGET = ProjektNiDUC
 TEMPLATE = app
@@ -29,7 +29,8 @@ SOURCES += \
     item.cpp \
     parameterschooser.cpp \
     itemsgroup.cpp \
-    serialsystem.cpp
+    serialsystem.cpp \
+    qcustomplot.cpp
 
 HEADERS += \
         vpsserwer.h \
@@ -37,7 +38,8 @@ HEADERS += \
     item.h \
     parameterschooser.h \
     itemsgroup.h \
-    serialsystem.h
+    serialsystem.h \
+    qcustomplot.h
 
 FORMS += \
         vpsserwer.ui \

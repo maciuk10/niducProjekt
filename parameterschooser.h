@@ -19,6 +19,7 @@ public:
     ~ParametersChooser();
     void addItemsGroup(ItemsGroup* items);
     ItemsGroup *getItemsChoosen();
+    void setItemsType(QString itemsType);
 
 private slots:
     void on_deviceName_currentIndexChanged(const QString &arg1);
@@ -30,6 +31,7 @@ private:
     QString title;
     Ui::ParametersChooser *ui;
     ItemsGroup *currentItems;
+    QString itemsType;
 };
 
 #endif // PARAMETERSCHOOSER_H

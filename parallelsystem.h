@@ -10,9 +10,9 @@
 class ParallelSystem {
 private:
     QString name;
-    QList<Item*> items;
-    QList<double> reliabilityByTime;
+    QList<Item *> items;
     int itemsCount;
+    double reliability;
 public:
     ParallelSystem(QString name);
     void addItem(Item* item);
@@ -21,10 +21,12 @@ public:
     double countDownTime(int hours);
     QString getName() const;
     void setName(const QString &value);
-    QList<double> getReliabilityByTime() const;
-    void setReliabilityByTime(const QList<double> &value);
     int getItemsCount() const;
     void setItemsCount(int value);
+    double getReliability() const;
+    void setReliability();
+    QList<Item *> getItems() const;
+    Item *getItem(int index);
 };
 
 #endif // PARALLELSYSTEM_H

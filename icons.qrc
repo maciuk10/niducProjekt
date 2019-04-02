@@ -2,5 +2,12 @@
     <qresource prefix="/menuItems">
         <file>search.png</file>
         <file>sketch.png</file>
+        <file>add-circular-outlined-button.png</file>
+        <file>right-arrow.png</file>
+        <file>database.png</file>
+        <file>refresh.png</file>
+        <file>play-button.png</file>
+        <file>success.png</file>
+        <file>next-page.png</file>
     </qresource>
 </RCC>
