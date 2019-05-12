@@ -12,6 +12,8 @@
 #include "parallelsystem.h"
 #include "serialsystem.h"
 #include "qcustomplot.h"
+#include "generatesurvey.h"
+#include "gaussrandomgenerator.h"
 
 using namespace std::this_thread;
 using namespace std::chrono;
@@ -28,6 +30,7 @@ public:
     explicit VPSSerwer(QWidget *parent = nullptr);
     ~VPSSerwer();
     QString formatDoubleHours(double hours);
+    int getDaysCount(double hours);
     void initializePlot();
     void displaySLALevels(double value);
     double getDoubleLabelValue(QLabel *label);
@@ -48,6 +51,8 @@ public:
     void removeCheckedItems();
     void decreaseMttr(double procent);
     void renewElement(double criticalReliability);
+    QMap<int, int> prepareChartsData(int downtime, int momentsCount);
+    QMap<int, double> prepareChartsData2(int downtime, int momentsCount);
 
 private slots:
     void on_addHDD_clicked();
@@ -70,6 +75,8 @@ private slots:
 
     void on_startDrawing_2_clicked();
 
+    void on_generateDataBtn_clicked();
+
 private:
     Ui::VPSSerwer *ui;
     ItemsGroup *routers;
@@ -88,6 +95,8 @@ private:
     bool nextPlot;
     double constReliabilityProcent;
     double mttrToDecrease;
+    GaussRandomGenerator *gauss;
+    GaussRandomGenerator *moments;
 };
 
 #endif // VPSSERWER_H

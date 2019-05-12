@@ -21,6 +21,9 @@ VPSSerwer::VPSSerwer(QWidget *parent) :
 
     nextPlot = false;
 
+    gauss = new GaussRandomGenerator(0.0, 350.0);
+    moments = new GaussRandomGenerator(0.0, 1.0);
+
     hardDrives->addItem(new Item("IBM Lenovo 800GB 3,5 SSD", "HARD_DRIVES", 1005287.0, 1.3));
     hardDrives->addItem(new Item("Western Digital Ultrastar DC HC520 1200GB HDD", "HARD_DRIVES", 2001193.0, 1.6));
     hardDrives->addItem(new Item("Dell R530 1800GB 3,5 HDD", "HARD_DRIVES", 1600021.0, 1.0));
@@ -110,6 +113,33 @@ QString VPSSerwer::formatDoubleHours(double hrs) {
        days += hours / 24;
     }
     return response.sprintf("%.2d d %.2d h %.2d min %.2d sek",days,hours,minutes,seconds);
+}
+
+int VPSSerwer::getDaysCount(double hrs){
+    QString response;
+    int integerHours = (int)hrs;
+    int days = integerHours / 24;
+    int hours = integerHours % 24;
+    int minutes = integerHours / 60;
+    int seconds = integerHours % 60;
+    double fraction = hrs - (int)hrs;
+    fraction = fraction * 3600.0;
+    int remainder = (int) fraction;
+    minutes = minutes + (remainder / 60);
+    seconds = seconds + (remainder % 60);
+    if(seconds > 60){
+       seconds = seconds % 60;
+       minutes += seconds / 60;
+    }
+    if(minutes > 60){
+       minutes = minutes % 60;
+       hours += minutes / 60;
+    }
+    if(hours > 24){
+       hours = hours % 24;
+       days += hours / 24;
+    }
+    return days;
 }
 
 void VPSSerwer::on_addHDD_clicked() {
@@ -345,6 +375,58 @@ void VPSSerwer::preparePlotsData(double downtime){
     breakTimes.append(sum);
 }
 
+QMap<int, double> VPSSerwer::prepareChartsData2(int downtime, int momentsCount){
+    QMap<int, double> breaks;
+    double sum = downtime;
+    int countOfBreaks;
+    if(momentsCount > 0){
+        countOfBreaks = momentsCount;
+    }else {
+        countOfBreaks = rand() % ((int)downtime+10) + 5;
+    }
+    qDebug() << "Sum wynosi: "<< sum;
+    for(int i = 0; i < countOfBreaks-1; i++){
+        moments->setMax(sum);
+        moments->setMin(0.0);
+        double tmp = gauss->rand();
+        breaks.insert((int)tmp, 0.0);
+        double tmp_val = moments->rand();
+        qDebug() << "Wylosowalem: "<<tmp_val;
+        breaks[(int)tmp] = tmp_val;
+        sum -= tmp_val;
+    }
+    double tmp2 = gauss->rand();
+    breaks.insert((int)tmp2, 0.0);
+    breaks[(int)tmp2] = sum;
+    qDebug() << "Ostatni element ma: "<<breaks[(int)tmp2];
+
+    return breaks;
+}
+
+QMap<int, int> VPSSerwer::prepareChartsData(int downtime, int momentsCount){
+    QMap<int, int> breaks;
+    int sum = downtime;
+    int countOfBreaks;
+    if(momentsCount > 0){
+        countOfBreaks = momentsCount;
+    }else {
+        countOfBreaks = rand() % ((int)downtime+10) + 5;
+    }
+    for(int i = 0; i < countOfBreaks-1; i++){
+        double tmp = gauss->rand();
+        qDebug() << "Wygenerowałem tempa: " << tmp;
+        breaks.insert((int)tmp, 0.0);
+        int tmp_val = rand() % sum + 0;
+        breaks[(int)tmp] = tmp_val;
+        sum -= tmp_val;
+    }
+    double tmp2 = gauss->rand();
+    breaks.insert((int)tmp2, 0);
+    breaks[(int)tmp2] = sum;
+
+    return breaks;
+}
+
 double VPSSerwer::randomFloat( int _from, int _to, int n ) {
     if(_from == _to){
        return 0;
@@ -355,11 +437,9 @@ double VPSSerwer::randomFloat( int _from, int _to, int n ) {
 int VPSSerwer::tenPow( unsigned int n ) {
     int base = 10;
     int res = 1.0;
-    while( n > 0 )
-    {
+    while( n > 0 ) {
         if( n & 1 )
              res *= base;
-
         base *= base;
         n >>= 1;
     }
@@ -612,4 +692,89 @@ double VPSSerwer::getMttrToDecrease() const {
 
 void VPSSerwer::setMttrToDecrease(double value) {
     mttrToDecrease = value;
+}
+
+void VPSSerwer::on_generateDataBtn_clicked() {
+    QList<ParallelSystem*> components = serverSystem->getItems();
+    bool systemComplete = true;
+    foreach(ParallelSystem* component, components){
+        if(component->getItemsCount() == 0){
+            systemComplete = false;
+            break;
+        }
+    }
+    if(!systemComplete){
+        QMessageBox::information(this, "Nie wybrano elementów", "Nie zostały wybrane wszystkie elementy niezbędne do działania systemu. Naciśnij przycisk + przy odpowiedniej grupie urządzeń dla których lista jest pusta");
+        return;
+    }else {
+        GenerateSurvey *gs = new GenerateSurvey(this);
+        gs->setModal(true);
+        gs->exec();
+        QMap<QString, QString> conf = gs->getConfiguration();
+        serverSystem->setReliability();
+        qDebug () << "Ustalono niezawodność całego systemu: "<< QString::number(serverSystem->getReliability(), 'f', 20);
+        int daysDowntime = getDaysCount(serverSystem->getDowntime());
+        qDebug() << "Ustalono downtime: "<< daysDowntime;
+        int times = conf["times"].toInt();
+        QString keysFile = "";
+        QString valuesFile = "";
+        moments = new GaussRandomGenerator(0.0, (double)daysDowntime);
+        QList<QList<int>> resultFileDays;
+        QList<QList<double>> resultFileMoments;
+        for(int i = 0; i < times; i++){
+            QMap<int, double> fileRow;
+            if(conf["count"] != "random"){
+                fileRow = prepareChartsData2(daysDowntime, conf["count"].toInt());
+            }else {
+                fileRow = prepareChartsData2(daysDowntime, 0);
+            }
+            QList<int> days;
+            QList<double> moments;
+            for(int e : fileRow.keys()){
+                days.append(e);
+                moments.append(fileRow.value(e));
+            }
+            resultFileDays.append(days);
+            resultFileMoments.append(moments);
+        }
+        if(conf["type"] == "count"){
+            QString fileName = QFileDialog::getSaveFileName(this, tr("Zapisz dane do pliku"), "", tr("CSV - Rozdzielany przecinkami (*.csv)"));
+            if (fileName.isEmpty())
+                    return;
+                else {
+                    QFile file(fileName);
+                    if (!file.open(QFile::WriteOnly | QFile::Truncate)) {
+                        QMessageBox::information(this, tr("Nie można otworzyć pliku"),
+                            file.errorString());
+                        return;
+                    }
+                    QTextStream out(&file);
+                    for(int i = 0; i < resultFileDays.size(); i++){
+                        for(int j = 0; j < resultFileDays[i].size(); j++){
+                            out << resultFileDays[i][j] << ";";
+                        }
+                        out << "\n";
+                    }
+                }
+        }else {
+            QString fileName = QFileDialog::getSaveFileName(this, tr("Zapisz dane do pliku"), "", tr("CSV - Rozdzielany przecinkami (*.csv)"));
+            if (fileName.isEmpty())
+                    return;
+                else {
+                    QFile file(fileName);
+                    if (!file.open(QFile::WriteOnly |QFile::Truncate)) {
+                        QMessageBox::information(this, tr("Nie można otworzyć pliku"),
+                            file.errorString());
+                        return;
+                    }
+                    QTextStream out(&file);
+                    for(int i = 0; i < resultFileMoments.size(); i++){
+                        for(int j = 0; j < resultFileMoments[i].size(); j++){
+                            out << QString::number(resultFileMoments[i][j], 'g', 10) << ";";
+                        }
+                        out << "\n";
+                    }
+                }
+        }
+    }
 }

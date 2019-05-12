@@ -30,7 +30,9 @@ SOURCES += \
     parameterschooser.cpp \
     itemsgroup.cpp \
     serialsystem.cpp \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    generatesurvey.cpp \
+    gaussrandomgenerator.cpp
 
 HEADERS += \
         vpsserwer.h \
@@ -39,11 +41,14 @@ HEADERS += \
     parameterschooser.h \
     itemsgroup.h \
     serialsystem.h \
-    qcustomplot.h
+    qcustomplot.h \
+    generatesurvey.h \
+    gaussrandomgenerator.h
 
 FORMS += \
         vpsserwer.ui \
-    parameterschooser.ui
+    parameterschooser.ui \
+    generatesurvey.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

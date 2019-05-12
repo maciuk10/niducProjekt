@@ -10,4 +10,7 @@
         <file>success.png</file>
         <file>next-page.png</file>
     </qresource>
+    <qresource prefix="/">
+        <file>analysis.png</file>
+    </qresource>
 </RCC>

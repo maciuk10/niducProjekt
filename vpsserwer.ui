@@ -106,6 +106,38 @@
       <bool>true</bool>
      </property>
     </widget>
+    <widget class="QPushButton" name="generateDataBtn">
+     <property name="geometry">
+      <rect>
+       <x>577</x>
+       <y>0</y>
+       <width>111</width>
+       <height>111</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton#generateDataBtn {
+     background-color:  rgba(255,255,255,0.1);
+	border: none;
+ }</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="icons.qrc">
+       <normaloff>:/analysis.png</normaloff>:/analysis.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>50</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
@@ -123,7 +155,7 @@
      <enum>QTabWidget::Rounded</enum>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="DesignTab">
      <attribute name="title">
@@ -563,8 +595,8 @@
      <widget class="QWidget" name="layoutWidget_2">
       <property name="geometry">
        <rect>
-        <x>486</x>
-        <y>398</y>
+        <x>483</x>
+        <y>393</y>
         <width>130</width>
         <height>90</height>
        </rect>
@@ -635,7 +667,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-415</y>
+         <y>0</y>
          <width>659</width>
          <height>1100</height>
         </rect>
